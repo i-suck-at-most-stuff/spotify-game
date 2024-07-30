@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spotify Playlist Game</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <nav>
+    <div class="logo"><i class="fab fa-spotify"></i> Spotify Game</div>
+    <ul>
+      <li><a href="#">Home</a></li>
+      <li><a href="about.html">About Me</a></li>
+    </ul>
+  </nav>
+
+  <div id="initial-screen">
+    <div class="instructions">
+      <h1>Welcome to the Playlist Game!</h1>
+      <p>1. Go to <a href="https://www.spotlistr.com/export/spotify-playlist" target="_blank">Spotlistr</a> to export your Spotify playlist.</p>
+      <p>2. Copy the track codes from the exported CSV file.</p>
+      <p>3. Paste them into the text box below.</p>
+      <textarea id="track-codes" placeholder="Paste your track codes here..."></textarea>
+      <button onclick="startGame()">Finished</button>
+    </div>
+  </div>
+
+  <div id="game-screen" style="display: none;">
+    <main>
+      <div class="description">
+        <h1>Is this song from your playlist?</h1>
+      </div>
+      <div class="spotify-song" id="spotify-song">
+        <!-- Embedded Spotify song will appear here -->
+      </div>
+      <div class="question" id="question" style="display: none;">
+        <p>Is this song from your playlist?</p>
+        <button onclick="checkAnswer(true)">Yes</button>
+        <button onclick="checkAnswer(false)">No</button>
+      </div>
+      <div class="result" id="result" style="display: none;"></div>
+      <div class="next-button" id="next-button" style="display: none;">
+        <button onclick="getRandomSong()">Next</button>
+      </div>
+      <br>
+      <div class="score" id="score">Score: 0</div>
+    </main>
+  </div>
+
+  <footer>
+    <p>Made by i-suck-at-most-stuff</p>
+  </footer>
+ <script>
+  let playlistTracks = [];
+  let allTracks = [];
+  let isFromPlaylist = false;
+  let score = 0;
+
+  function startGame() {
+    const trackCodes = document.getElementById('track-codes').value
+      .split('\n')
+      .map(line => line.trim())
+      .filter(uri => uri) // Ensure non-empty lines
+      .map(code => code.replace(/[^\w]/g, '')); // Remove non-alphanumeric characters
+
+    playlistTracks = trackCodes.map(code => `spotify:track:${code}`);
+    allTracks = [...playlistTracks, ...otherTracks];
+    document.getElementById('initial-screen').style.display = 'none';
+    document.getElementById('game-screen').style.display = 'block';
+    getRandomSong();
+  }
+
+  function getRandomSong() {
+    const randomIndex = Math.floor(Math.random() * allTracks.length);
+    const songUri = allTracks[randomIndex];
+    isFromPlaylist = playlistTracks.includes(songUri);
+
+    // Extract track ID from Spotify URI
+    const trackId = songUri.split(':')[2];
+
+    document.getElementById('spotify-song').innerHTML = `
+      <iframe src="https://open.spotify.com/embed/track/${trackId}" width="300" height="380" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
+    `;
+    document.getElementById('question').style.display = 'block';
+    document.getElementById('result').style.display = 'none';
+    document.getElementById('next-button').style.display = 'none';
+  }
+
+  function checkAnswer(answer) {
+    const resultElement = document.getElementById('result');
+    if (answer === isFromPlaylist) {
+      resultElement.innerHTML = '<p>Correct!</p>';
+      score++;
+      document.getElementById('score').innerText = `Score: ${score}`;
+      document.getElementById('next-button').style.display = 'block';
+    } else {
+      resultElement.innerHTML = '<p>Wrong! Try again.</p>';
+      score = 0; // Reset score on wrong answer
+      document.getElementById('score').innerText = `Score: ${score}`;
+    }
+    resultElement.style.display = 'block';
+    document.getElementById('question').style.display = 'none';
+  }
+
+  const otherTracks = [
+    "spotify:track:2takcwOaAZWiXQijPHIx7B",
+        "spotify:track:6rqhFgbbKwnb9MLmUQDhG6",
+        "spotify:track:5T8EDUDqKcs6OSOwEsfqG7",
+        "spotify:track:35ItUJlMtjOQW3SSiTCrrw",
+        "spotify:track:3LlAyCYU26dvFZBDUIMb7a",
+        "spotify:track:2WfaOiMkCvy7F5fcp2zZ8L",
+        "spotify:track:0SNGe4xksgp7CGnY5kMXOJ",
+        "spotify:track:3Wrjm47oTz2sjIgck11l5e",
+        "spotify:track:2vz1CsL5WBsbpBcwgboTAw",
+        "spotify:track:6Z8R6UsFuGXGtiIxiD8ISb",
+        "spotify:track:6r2BECwMgEoRb5yLfp0Hca",
+        "spotify:track:2V65y3PX4DkRhy1djlxd9p",
+        "spotify:track:0nrRP2bk19rLc0orkWPQk2",
+        "spotify:track:6NAEpcvbmNdT0cWP3LFDcY",
+        "spotify:track:1zB4vmk8tFRmM9UULNzbLB",
+        "spotify:track:1Jj6MF0xDOMA3Ut2Z368Bx",
+        "spotify:track:3w3y8KPTfNeOKPiqUTakBh",
+        "spotify:track:1dNIEtp7AY3oDAKCGg2XkH",
+        "spotify:track:4gbVRS8gloEluzf0GzDOFc",
+        "spotify:track:1mKXFLRA179hdOWQBwUk9e",
+        "spotify:track:2Foc5Q5nqNiosCNqttzHof",
+        "spotify:track:6RtPijgfPKROxEzTHNRiDp",
+        "spotify:track:2s1sdSqGcKxpPr5lCl7jAV",
+        "spotify:track:69uxyAqqPIsUyTO8txoP2M",
+        "spotify:track:7LcfRTgAVTs5pQGEQgUEzN",
+        "spotify:track:78DVpEWwmJFC25KGz8fJuE",
+        "spotify:track:32OlwWuMpZ6b0aN2RZOeMS",
+        "spotify:track:7BKLCZ1jbUBVqRi2FVlTVw",
+        "spotify:track:4r6eNCsrZnQWJzzvFh4nlg",
+        "spotify:track:0VjIjW4GlUZAMYd2vXMi3b",
+        "spotify:track:1c8gk2PeTE04A1pIDH9YMk",
+        "spotify:track:2VhJ4nrPorAbySEgO4V0BS",
+        "spotify:track:3TGRqZ0a2l1LRblBkJoaDx",
+        "spotify:track:1i1fxkWeaMmKEB4T7zqbzK",
+        "spotify:track:2VxeLyX666F8uXCJ0dZF8B",
+        "spotify:track:5xTtaWoae3wi06K5WfVUUH",
+        "spotify:track:0gb1J5UrTpzaU1s3nupgCd",
+        "spotify:track:2QD4C6RRHgRNRAyrfnoeAo",
+        "spotify:track:2hHLbkatPwOOmrNxTiD41L",
+        "spotify:track:4y1LsJpmMti1PfRQV9AWWe",
+        "spotify:track:4fouWK6XVHhzl78KzQ1UjL",
+        "spotify:track:3GSMdtJphymHEsR8K9jT5Q",
+        "spotify:track:19CmuECYssqkPWANF4nLWM",
+        "spotify:track:07nH4ifBxUB4lZcsf44Brn",
+        "spotify:track:4nVBt6MZDDP6tRVdQTgxJg",
+        "spotify:track:10tzk7ZRjwnLKd3gjKLtTA",
+        "spotify:track:6UelLqGlWMcVH1E5c4H7lY",
+        "spotify:track:3b1IQflSLrgzYQPGFzI9cl",
+        "spotify:track:4skuEIloXWuxxgekKupkEH",
+        "spotify:track:1p4rYrxjVkj6v2eMzRhLfA",
+        "spotify:track:3FeVmId7tL5YN8B7R3imoM",
+        "spotify:track:0tBbt8CrmxbjRP0pueQkyU",
+        "spotify:track:5Nm9ERjJZ5oyfXZTECKmRt",
+        "spotify:track:16J6wH4Evm97ta1hDQIYQC",
+        "spotify:track:2Oycxb8QbPkpHTo8ZrmG0B",
+        "spotify:track:6OKmGZASRCmiKQKz4hCNrs",
+        "spotify:track:12GEpg2XOPyqk03JZEZnJs",
+        "spotify:track:48DKpTEVJ2pAjxQbWTad3q",
+        "spotify:track:2tUBqZG2AbRi7Q0BIrVrEj",
+        "spotify:track:3ge3q3Hz0KWhQX5EAQcwEy",
+        "spotify:track:7DhYjNLksXZhbRQeheAums",
+        "spotify:track:10atyYpAMMlqPHVDt6yER8",
+        "spotify:track:3rmo8F54jFF8OgYsqTxm5d",
+        "spotify:track:1UZOjK1BwmwWU14Erba9CZ",
+        "spotify:track:38UYeBLfvpnDSG9GznZdnL",
+        "spotify:track:2jnQwhY8Xa6voNfQKaEzGq",
+        "spotify:track:7JJmb5XwzOO8jgpou264Ml",
+        "spotify:track:5HCyWlXZPP0y6Gqq8TgA20",
+        "spotify:track:5KgdtjmglXPjJNKvMvSjgo",
+        "spotify:track:5etssK2rpk4SnHWWD1Q6xn",
+        "spotify:track:5Z9H0pKcFwsbSAS3IqCQKs",
+        "spotify:track:06p2Ij0lXD45LODQDCov0u",
+        "spotify:track:100Tm6z29RfHTdUQ6NIs0s",
+        "spotify:track:7qiZfU4dY1lWllzX7mPBI3",
+        "spotify:track:1WkMMavIMc4JZ8cfMmxHkI",
+        "spotify:track:5JpOV1GfgLcKc2lzR6lywq",
+        "spotify:track:1I8tHoNBFTuoJAlh4hfVVE",
+        "spotify:track:5EhzE6HJaCcLFrf5rPqvpk",
+        "spotify:track:7gqIqyeCaV2xNtfZWxEphD",
+        "spotify:track:60nZcImufyMA1MKQY3dcCH",
+        "spotify:track:23L5CiUhw2jV1OIMwthR3S",
+        "spotify:track:2NttzQ2kuVFFmEa8q4rsbu",
+        "spotify:track:0akyEssGRVHstqCSWXusJL",
+        "spotify:track:6WrI0LAC5M1Rw2MnX2ZvEg",
+        "spotify:track:5ZULALImTm80tzUbYQYM9d",
+        "spotify:track:1foeacjwgWD6UMmirTXwL5",
+        "spotify:track:3G9RQLOSjsXVUDyQSv2PQR",
+        "spotify:track:1uKjQoh8JZj9ryuYRhpd7E",
+        "spotify:track:0U10zFw4GlBacOy9VDGfGL",
+        "spotify:track:2MZ8QFHGiHa5oQcF6nX8fX",
+        "spotify:track:5QDLhrAOJJdNAmCTJ8xMyW",
+        "spotify:track:3EK4tGkSiO5xvvB5sM4tln",
+        "spotify:track:5cF0dROlMOK5uNZtivgu50",
+        "spotify:track:2ekn2ttSfGqwhhate0LSR0",
+        "spotify:track:1ARtG5eB1Ucn4v3VYwCZYU",
+        "spotify:track:3fsGuauu25JOT8Mu2VAG64",
+        "spotify:track:2UvyK06MtwKB6DoTovPvIZ",
+        "spotify:track:4Tnq3fOaPbBqho1rEjtcuQ",
+        "spotify:track:2BLkmOoxfeVcnEBXUzSjH7",
+        "spotify:track:6KGTjJOVyoR2PIswvovr3T",
+        "spotify:track:4mPtJh5mfHp7G1Bfng2KBz",
+        "spotify:track:0uUNN1nSoUx1A4fkDCWDQ7",
+        "spotify:track:0IfI2pPCUBS7PCkIjJUuJo",
+        "spotify:track:2Z8WuEywRWYTKe1NybPQEW",
+        "spotify:track:1yNyoWWWXC7rfDIRF7mD5E",
+        "spotify:track:2TQsZV5w5iwXF6RO0kPXI5",
+        "spotify:track:31nEzCbOUdKHHkIUVFeEBf",
+        "spotify:track:3iUPWbyaIl2bAlGlMFVUEJ",
+  ];
+</script>
+
+</body>
+</html>
